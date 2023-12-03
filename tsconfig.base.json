@@ -21,7 +21,7 @@
         "pretty": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "ESNext",
+        "target": "ESNext"
     },
     "exclude": ["node_modules", "dist"]
 }
