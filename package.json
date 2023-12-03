@@ -1,0 +1,25 @@
+{
+  "name": "aoc2023",
+  "version": "1.0.0",
+  "description": "My Advent of Cyber 2023 code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FinnyMarigold58/aoc2023.git"
+  },
+  "author": "Finny",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FinnyMarigold58/aoc2023/issues"
+  },
+  "homepage": "https://github.com/FinnyMarigold58/aoc2023#readme",
+  "devDependencies": {
+    "@biomejs/biome": "^1.4.1",
+    "@types/node": "^20.10.2",
+    "tsc-watch": "^6.0.4",
+    "typescript": "^5.3.2"
+  }
+}
