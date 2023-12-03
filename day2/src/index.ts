@@ -22,6 +22,30 @@ const possibleGames = getPossibleGames(parsedGames, {
 })
 console.log(`Part 1: ${getTotal(possibleGames)}`)
 
+const minimumList: pull[] = []
+for (const game of parsedGames) {
+	const minimum: pull = {
+		red: 0,
+		blue: 0,
+		green: 0
+	}
+	for (const pull of game.results) {
+		for (const color of Object.keys(pull)) {
+			minimum[color as Colors] = Math.max(
+				minimum[color as Colors],
+				pull[color as Colors]
+			)
+		}
+	}
+	minimumList.push(minimum)
+}
+
+const powers = minimumList.map((pull) => {
+	return pull.red * pull.blue * pull.green
+})
+
+console.log(`Part 2: ${powers.reduce((acc, power) => acc + power)}`)
+
 function getTotal(input: Game[]): number {
 	return input.reduce((acc, game) => acc + game.id, 0)
 }
