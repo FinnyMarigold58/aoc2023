@@ -2,6 +2,8 @@
 type gridLocation = {
 	x: number
 	y: number
+	symbol?: string
+	numbers?: number[]
 }
 
 import { readFileSync } from "fs"
@@ -39,7 +41,9 @@ for (const lineN in lines) {
 		if (symbolRegex.test(char)) {
 			const symData: gridLocation = {
 				x: charN,
-				y: parseInt(lineN)
+				y: parseInt(lineN),
+				symbol: char,
+				numbers: []
 			}
 			symbolMap.push(symData)
 		}
@@ -74,8 +78,12 @@ for (const lineN in lines) {
 					y: squareData.y + translation.y
 				}
 
-				for (const sym of symbolMap) {
+				for (const symI in symbolMap) {
+					const sym = symbolMap[symI]
 					if (sym.x === tempData.x && sym.y === tempData.y) {
+						if (sym.symbol === "*") {
+							symbolMap[symI].numbers?.push(num)
+						}
 						nextNumber = false
 						sum += num
 						break
@@ -90,3 +98,12 @@ for (const lineN in lines) {
 }
 
 console.log(`Part 1: ${sum}`)
+
+let totalGearRatio = 0
+
+for (const sym of symbolMap) {
+	if (sym.numbers ? sym.numbers.length >= 2 : false) {
+		totalGearRatio += sym.numbers?.reduce((acc, val) => acc * val) || 0
+	}
+}
+console.log(`Part 2: ${totalGearRatio}`)
