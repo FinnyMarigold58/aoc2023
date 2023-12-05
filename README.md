@@ -1,2 +1,2 @@
 # aoc2023
-My Advent of Cyber 2023 code
+For advent of cyber this year I will try to learn better typescript
