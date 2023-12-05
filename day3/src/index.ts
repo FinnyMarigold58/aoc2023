@@ -1,89 +1,92 @@
+// Define structures
+type gridLocation = {
+	x: number
+	y: number
+}
+
 import { readFileSync } from "fs"
 import { dirname } from "path"
 import { fileURLToPath } from "url"
 
-// Info about a symbol
-type SymbolData = {
-	coords: Coords
-	symbol: string
-	numbers: number[]
-}
-
-type Coords = {
-	row: number
-	column: number
-}
-
-// Get input
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const filename = "example.txt"
+const filename = "input.txt"
 
-const file = readFileSync(`${__dirname}/${filename}`, "utf-8")
-const lines = file.split("\r\n")
+const symbolRegex = /[^.\d\s]/g
+const numberRegex = /\d+/g
 
-const nearbysquares: Coords[] = [
-	{ row: -1, column: -1 },
-	{ row: -1, column: 0 },
-	{ row: -1, column: 1 },
-	{ row: 0, column: -1 },
-	{ row: 0, column: 1 },
-	{ row: 1, column: -1 },
-	{ row: 1, column: 0 },
-	{ row: 1, column: 1 }
+const squareTranslations: Array<gridLocation> = [
+	{ x: -1, y: -1 },
+	{ x: -1, y: 0 },
+	{ x: -1, y: 1 },
+	{ x: 0, y: -1 },
+	{ x: 0, y: 1 },
+	{ x: 1, y: -1 },
+	{ x: 1, y: 0 },
+	{ x: 1, y: 1 }
 ]
 
-// Grid of symbols
-const symbolGrid: SymbolData[] = []
+const data = readFileSync(`${__dirname}/${filename}`, "utf-8")
 
-// Populate symbol grid with symboldata
-for (const row in lines) {
-	const rowData = lines[parseInt(row)]
-	for (let index = 0; index < rowData.length; index++) {
-		const char = rowData[index]
-		if (char === "." || Number.isInteger(parseInt(char))) continue
-		const data = {
-			coords: {
-				column: index,
-				row: parseInt(row)
-			},
-			symbol: char,
-			numbers: []
-		}
-		symbolGrid.push(data)
-	}
-}
-
-// Find all numbers
 let sum = 0
-for (const rowI in lines) {
-	const row = lines[parseInt(rowI)]
-	for (const match of row.matchAll(/\d+/g)) {
-		const num = parseInt(match["0"])
-		const surroundingSquares: Coords[] = []
-		for (const nearbyTranslation of nearbysquares) {
-			for (let index = 0; index < match[0].length; index++) {
-				const squareData = {
-					row: parseInt(rowI),
-					column: index
-				}
-				surroundingSquares.push({
-					row: squareData.row + nearbyTranslation.row,
-					column: squareData.column + nearbyTranslation.row
-				})
-			}
-		}
 
-		for (const surroundingSquare of surroundingSquares) {
-			for (const symbol of symbolGrid) {
-				if (
-					symbol.coords.column === surroundingSquare.column &&
-					symbol.coords.row === surroundingSquare.row
-				) {
-					sum += num
-					break
-				}
+const symbolMap: Array<gridLocation> = []
+
+const lines = data.split("\r\n")
+for (const lineN in lines) {
+	const line = lines[parseInt(lineN)]
+	for (let charN = 0; charN < line.length; charN++) {
+		const char = line[charN]
+		if (symbolRegex.test(char)) {
+			const symData: gridLocation = {
+				x: charN,
+				y: parseInt(lineN)
 			}
+			symbolMap.push(symData)
 		}
 	}
 }
-console.log(sum)
+
+for (const lineN in lines) {
+	const line = lines[parseInt(lineN)]
+	for (const match of line.matchAll(numberRegex)) {
+		const num = parseInt(match[0])
+		for (
+			let y = match.index || 0;
+			y < (match.index || 0) + match[0].length;
+			y++
+		) {
+			let nextNumber = true
+			const squareData: gridLocation = { x: y, y: parseInt(lineN) }
+			for (const translation of squareTranslations) {
+				if (
+					squareData.x + translation.x < 0 ||
+					squareData.x + translation.x >= line.length
+				)
+					continue
+				if (
+					squareData.y + translation.y < 0 ||
+					squareData.y + translation.y >= line.length
+				)
+					continue
+
+				const tempData = {
+					x: squareData.x + translation.x,
+					y: squareData.y + translation.y
+				}
+
+				for (const sym of symbolMap) {
+					if (sym.x === tempData.x && sym.y === tempData.y) {
+						nextNumber = false
+						sum += num
+						break
+					}
+				}
+
+				if (!nextNumber) break
+			}
+			if (!nextNumber) break
+		}
+	}
+}
+
+console.log(`Part 1: ${sum}`)
